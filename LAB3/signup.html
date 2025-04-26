@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Signup Page</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>회원가입</h2>
+        <form action="login.html">
+            <label for="username">아이디:</label>
+            <input type="text" id="username" name="username" placeholder="아이디를 입력하세요" required><br><br>
+
+            <label for="email">이메일:</label>
+            <input type="email" id="email" name="email" autocomplete="on"><br><br>
+
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" name="password" autofocus><br><br>
+
+            <label for="age">나이:</label>
+            <input type="number" id="age" name="age" step="1"><br><br>
+
+            <label for="birthdate">생년월일:</label>
+            <input type="date" id="birthdate" name="birthdate"><br><br>
+
+            <p>성별:</p>
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">남성</label>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="female">여성</label><br><br>
+
+            <label for="job">직업:</label>
+            <select id="job" name="job">
+                <option value="student">학생</option>
+                <option value="developer">개발자</option>
+                <option value="designer">디자이너</option>
+                <option value="other">기타</option>
+            </select><br><br>
+
+            <button type="submit">가입하기</button>
+        </form>
+        <p>이미 계정이 있으신가요? <a href="login.html">로그인하기</a></p>
+    </div>
+</body>
+
+</html>
