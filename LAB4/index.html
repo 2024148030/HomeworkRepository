@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인프밍 영화 정보 사이트</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header-container">
+            <h1 class="slide-in">인프밍 영화 정보 사이트입니다.</h1>
+        </header>
+
+        <nav class="nav">
+            <a href="index.html">메인페이지</a>
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+        </nav>
+
+        <main class="main-content">
+            <section class="movies-section">
+                <div>
+                    <input type="text" id="searchInput" placeholder="키워드를 입력하세요...">
+                    <button onclick="filterResults()">Filter results</button>
+                </div>
+                <div>
+                    <label><input type="radio" name="sort" value="ratingDesc" checked> 평점 내림차순</label>
+                    <label><input type="radio" name="sort" value="ratingAsc"> 평점 오름차순</label>
+                    <label><input type="radio" name="sort" value="dateDesc"> 개봉 내림차순</label>
+                    <label><input type="radio" name="sort" value="dateAsc"> 개봉 오름차순</label>
+                </div>
+                <h2>Movies</h2>
+                <div class="movie-row">
+                    <div class="movie-column">
+                        <div class="movie-box">
+                            <div class="movie-img-container">
+                                <img src="./images/Grumpier_Old_Men.jpg" alt="Grumpier Old Men poster"
+                                    class="movie-img">
+                                <div class="movie-title">Grumpier Old Men</div>
+                            </div>
+                        </div>
+                        <div class="movie-box">
+                            <div class="movie-img-container">
+                                <img src="./images/jumanji.jpg" alt="Jumanji poster" class="movie-img">
+                                <div class="movie-title">Jumanji</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="movie-column">
+                        <div class="movie-box">
+                            <div class="movie-img-container">
+                                <img src="./images/Waiting_to_Exhale.jpg" alt="Waiting to Exhale poster"
+                                    class="movie-img">
+                                <div class="movie-title">Waiting to Exhale</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="movie-column">
+                        <div class="movie-box">
+                            <div class="movie-img-container">
+                                <img src="./images/Deadpool.jpg" alt="Deadpool poster" class="movie-img">
+                                <div class="movie-title">데드풀</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="movie-column">
+                        <div class="movie-box">
+                            <div class="movie-img-container">
+                                <img src="./images/memonto.jpg" alt="Memento poster" class="movie-img">
+                                <div class="movie-title">메멘토</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>About</h2>
+                <p>
+                    여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트!<br>
+                    여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트!<br>
+                    여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트! 여기는 인프밍 영화 정보 사이트!
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let movies = [];
+        let filteredMovies = [];
+        let currentPage = 1;
+        const pageSize = 6;
+
+        // 영화 데이터 불러오기
+        async function fetchMovies() {
+            const res = await fetch('product.json');
+            movies = await res.json();
+            filteredMovies = movies.slice();
+            renderMovies();
+        }
+
+        // 영화 출력
+        function renderMovies(reset = true) {
+            const movieRow = document.querySelector('.movie-row');
+            if (reset) {
+                movieRow.innerHTML = '';
+                currentPage = 1;
+            }
+            const start = 0;
+            const end = currentPage * pageSize;
+            const moviesToShow = filteredMovies.slice(0, end);
+
+            movieRow.innerHTML = '';
+            moviesToShow.forEach(movie => {
+                const col = document.createElement('div');
+                col.className = 'movie-column';
+                col.innerHTML = `
+                <div class="movie-box">
+                    <div class="movie-img-container">
+                        <img src="${movie.poster_path}" alt="${movie.title} poster" class="movie-img">
+                        <div class="movie-overview">${movie.overview}</div>
+                    </div>
+                    <div class="movie-title">${movie.title}</div>
+                    <div>평점: ${movie.vote_average}</div>
+                    <div>개봉일: ${movie.release_date}</div>
+                </div>
+            `;
+                movieRow.appendChild(col);
+            });
+        }
+
+        // Infinite Scroll
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
+                if (currentPage * pageSize < filteredMovies.length) {
+                    currentPage++;
+                    renderMovies(false);
+                }
+            }
+        });
+
+        // 필터/정렬 함수
+        function filterResults() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.querySelector('input[name="sort"]:checked').value;
+
+            // 키워드 검색 (제목, 줄거리 모두 포함)
+            filteredMovies = movies.filter(movie =>
+                movie.title.toLowerCase().includes(keyword) ||
+                movie.overview.toLowerCase().includes(keyword)
+            );
+
+            // 정렬
+            switch (sort) {
+                case 'ratingDesc':
+                    filteredMovies.sort((a, b) => b.vote_average - a.vote_average);
+                    break;
+                case 'ratingAsc':
+                    filteredMovies.sort((a, b) => a.vote_average - b.vote_average);
+                    break;
+                case 'dateDesc':
+                    filteredMovies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+                    break;
+                case 'dateAsc':
+                    filteredMovies.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+                    break;
+            }
+            renderMovies();
+        }
+
+        // 정렬 라디오 변경 시 자동 필터링
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="sort"]').forEach(radio => {
+                radio.addEventListener('change', filterResults);
+            });
+            fetchMovies();
+        });
+    </script>
+</body>
+
+</html>
